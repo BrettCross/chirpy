@@ -31,3 +31,12 @@ Content-Type: application/json
 {
     "email": "new@example.com"
 }
+
+### 
+
+GET http://localhost:8080/api/chirps
+
+###
+
+GET http://localhost:8080/api/chirps/9769f973-23a9-4672-a78e-a2d77815fb36
+

@@ -16,7 +16,7 @@ type User struct {
 	Email     string    `json:"email"`
 }
 
-func (cfg *apiConfig) handlerUsers(w http.ResponseWriter, r *http.Request) {
+func (cfg *apiConfig) handlerUsersCreate(w http.ResponseWriter, r *http.Request) {
 	type parameters struct {
 		Email string `json:"email"`
 	}
@@ -32,6 +32,7 @@ func (cfg *apiConfig) handlerUsers(w http.ResponseWriter, r *http.Request) {
 	// create user in db
 	newUser, err := cfg.db.CreateUser(r.Context(), params.Email)
 	if err != nil {
+		// TODO: replace with respondWithError
 		log.Printf("Error creating user in db: %s", err)
 	}
 	
