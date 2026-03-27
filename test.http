@@ -15,11 +15,12 @@ Content-Type: application/json
 
 ###
 
-POST http://localhost:8080/api/validate_chirp
+POST http://localhost:8080/api/chirps
 Content-Type: application/json
 
 {
-    "body": "Holy kerfuffle I need to take a break sharbert!"
+    "body": "Hello, world!",
+    "user_id": "cf8f351c-ab88-4037-951c-5b9846c7457d"
 }
 
 ###
@@ -28,5 +29,5 @@ POST http://localhost:8080/api/users
 Content-Type: application/json
 
 {
-    "email": "old@example.com"
+    "email": "new@example.com"
 }
