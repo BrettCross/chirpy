@@ -7,6 +7,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/brettcross/chirpy/internal/auth"
 	"github.com/brettcross/chirpy/internal/database"
 	"github.com/google/uuid"
 )
@@ -33,7 +34,6 @@ func cleanChirp(msg string, words map[string]struct{}) string {
 func (cfg *apiConfig) handlerChirpsCreate(w http.ResponseWriter, r *http.Request) {
 	type parameters struct {
 		Body string `json:"body"`
-		UserID uuid.UUID `json:"user_id"`
 	}
 
 	profanity := map[string]struct{}{
@@ -50,6 +50,18 @@ func (cfg *apiConfig) handlerChirpsCreate(w http.ResponseWriter, r *http.Request
 		return 
 	}
 
+	token, err := auth.GetBearerToken(r.Header)
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, "couldn't get bearer token", err)
+		return
+	}
+
+	userID, err := auth.ValidateJWT(token, cfg.jwtSecret)
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, "couldn't validate JWT token", err)
+		return
+	}
+
 	const maxChirpLength = 140
 	if len(params.Body) > maxChirpLength {
 		respondWithError(w, http.StatusBadRequest, "Chirp is too long", nil)
@@ -60,7 +72,7 @@ func (cfg *apiConfig) handlerChirpsCreate(w http.ResponseWriter, r *http.Request
 	// respond with JSON
 	newChirp, err := cfg.db.CreateChirp(r.Context(), database.CreateChirpParams{
 		Body: cleanedChirp,
-		UserID: params.UserID,
+		UserID: userID,
 	})
 	if err != nil {
 		// TODO: replace with respondWithError
