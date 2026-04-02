@@ -64,12 +64,14 @@ func (cfg *apiConfig) handlerUserUpdate(w http.ResponseWriter, r *http.Request) 
 		Password 		 string `json:"password"`
 	}
 
+	// authentication 
 	authToken, err := auth.GetBearerToken(r.Header)
 	if err != nil {
 		respondWithError(w, http.StatusUnauthorized, "couldn't get auth token", err)
 		return
 	}
 
+	// validation
 	userID, err := auth.ValidateJWT(authToken, cfg.jwtSecret)
 	if err != nil {
 		respondWithError(w, http.StatusUnauthorized, "invalid token", err)
