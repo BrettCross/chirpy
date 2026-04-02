@@ -12,11 +12,12 @@ import (
 )
 
 type User struct {
-	ID        uuid.UUID `json:"id"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
-	Email     string    `json:"email"`
-	Token     string    `json:"token"`
+	ID        		uuid.UUID `json:"id"`
+	CreatedAt 		time.Time `json:"created_at"`
+	UpdatedAt 		time.Time `json:"updated_at"`
+	Email     		string    `json:"email"`
+	Token     		string    `json:"token"`
+	RefreshToken 	string	  `json:"refresh_token"`
 }
 
 func (cfg *apiConfig) handlerUsersCreate(w http.ResponseWriter, r *http.Request) {
@@ -61,7 +62,6 @@ func (cfg *apiConfig) handlerUserLogin(w http.ResponseWriter, r *http.Request) {
 	type parameters struct {
 		Email 			 string `json:"email"`
 		Password 		 string `json:"password"`
-		ExpiresInSeconds int 	`json:"expires_in_seconds"`
 	}
 
 	decoder := json.NewDecoder(r.Body)
@@ -70,10 +70,6 @@ func (cfg *apiConfig) handlerUserLogin(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, "Couldn't decode parameters", err)
 		return
-	}
-	expirationTime := time.Hour
-	if params.ExpiresInSeconds > 0 && params.ExpiresInSeconds < 3600 {
-		expirationTime = time.Duration(params.ExpiresInSeconds) * time.Second
 	}
 
 	dbUser, err := cfg.db.GetUserByEmail(r.Context(), params.Email)
@@ -94,9 +90,24 @@ func (cfg *apiConfig) handlerUserLogin(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// create JWT
-	token, err := auth.MakeJWT(dbUser.ID, cfg.jwtSecret, expirationTime)
+	token, err := auth.MakeJWT(dbUser.ID, cfg.jwtSecret, time.Hour)
 	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, "Couldn't create access JWT", err)
+		return
+	}
+
+	// create refresh token
+	refreshToken := auth.MakeRefreshToken()
+	expiration := time.Now().Add(60 * 24 * time.Hour)
+
+	// save refresh token to db
+	_, err = cfg.db.CreateRefreshToken(r.Context(), database.CreateRefreshTokenParams{
+		Token: refreshToken,
+		UserID: dbUser.ID,
+		ExpiresAt: expiration,
+	})
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, "couldn't save refresh token", err)
 		return
 	}
 
@@ -106,5 +117,6 @@ func (cfg *apiConfig) handlerUserLogin(w http.ResponseWriter, r *http.Request) {
 		UpdatedAt: dbUser.UpdatedAt,
 		Email: dbUser.Email,
 		Token: token,
+		RefreshToken: refreshToken,
 	})
 }
