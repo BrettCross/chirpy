@@ -40,3 +40,28 @@ GET http://localhost:8080/api/chirps
 
 GET http://localhost:8080/api/chirps/9769f973-23a9-4672-a78e-a2d77815fb36
 
+### 
+
+POST http://localhost:8080/api/polka/webhooks
+Content-Type: application/json
+Authorization: ApiKey f271c81ff7084ee5b99a5091b42d486e
+
+{
+  "event": "user.upgraded",
+  "data": {
+    "user_id": "3311741c-680c-4546-99f3-fc9efac2036c"
+  }
+}
+
+###
+
+POST http://localhost:8080/api/polka/webhooks
+Content-Type: application/json
+Authorization: ApiKey f271c81ff7084ee5b99a5091b42d486e
+
+{
+  "event": "user.upgraded",
+  "data": {
+    "user_id": "98ceee17-b837-4712-8077-6373af98336d"
+  }
+}
