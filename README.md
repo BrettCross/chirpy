@@ -10,3 +10,8 @@
 - Document the REST API with markdown
 
 
+## Documentation
+
+- [API Endpoint Documentation](docs/api.md)
+- [Authentication Guide](docs/authentication.md)
+
