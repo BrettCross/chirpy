@@ -86,7 +86,7 @@ func MakeRefreshToken() string {
 func GetAPIKey(headers http.Header) (string, error) {
 	authHeader := headers.Get("Authorization")
 	authHeaderArr := strings.Split(authHeader, " ")
-	if len(authHeader) < 2 {
+	if len(authHeaderArr) < 2 {
 		return "", errors.New("invalid authorization header")
 	}
 	if authHeaderArr[0] == "ApiKey" {

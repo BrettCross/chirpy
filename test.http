@@ -15,32 +15,57 @@ Content-Type: application/json
 
 ###
 
-POST http://localhost:8080/api/chirps
+
+POST http://localhost:8080/api/users
 Content-Type: application/json
 
 {
-    "body": "Hello, world!",
-    "user_id": "cf8f351c-ab88-4037-951c-5b9846c7457d"
+    "email": "new@new.com",
+    "password": "secret"
 }
 
 ###
 
-POST http://localhost:8080/api/users
+POST http://localhost:8080/api/login
+Content-Type: application/json
+
+{
+    "email": "new@new.com",
+    "password": "secret"
+}
+
+###
+
+POST http://localhost:8080/api/chirps
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJjaGlycHktYWNjZXNzIiwic3ViIjoiMjk0NmMzYmUtY2RjZC00YzU4LWI1ZTItZWE0ZGJhMzI3OTg0IiwiZXhwIjoxNzc1NDIwMjc0LCJpYXQiOjE3NzU0MTY2NzR9.IPUu2VFIJpyJc9nhGxOw5dOMVvB-QjwIaSRSs6crSU8
+
+{
+    "body": "Hello, world!",
+    "user_id": "2946c3be-cdcd-4c58-b5e2-ea4dba327984"
+}
+
+###
+
+POST http://localhost:8080/api/login
 Content-Type: application/json
 
 {
     "email": "new@example.com"
 }
 
-### 
-
-GET http://localhost:8080/api/chirps
-
 ###
 
-GET http://localhost:8080/api/chirps/9769f973-23a9-4672-a78e-a2d77815fb36
+POST http://localhost:8080/api/chirps
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJjaGlycHktYWNjZXNzIiwic3ViIjoiMjRlOGFlYmQtZTFkZC00NjM5LWFhNjMtNzBmN2QzODdjN2NjIiwiZXhwIjoxNzc1NDIwNjE3LCJpYXQiOjE3NzU0MTcwMTd9.sSFvuv1zEqZJEQ-T0o9PMxIiP9mKCBxKSYyHSbSuSss
 
-### 
+{
+    "body": "GO WINGS GO!",
+    "user_id": "24e8aebd-e1dd-4639-aa63-70f7d387c7cc"
+}
+
+###
 
 POST http://localhost:8080/api/polka/webhooks
 Content-Type: application/json
@@ -62,6 +87,18 @@ Authorization: ApiKey f271c81ff7084ee5b99a5091b42d486e
 {
   "event": "user.upgraded",
   "data": {
-    "user_id": "98ceee17-b837-4712-8077-6373af98336d"
+    "user_id": "24e8aebd-e1dd-4639-aa63-70f7d387c7cc"
   }
 }
+
+### 
+
+GET http://localhost:8080/api/chirps
+
+###
+
+GET http://localhost:8080/api/chirps?author_id=1
+
+###
+
+GET http://localhost:8080/api/chirps?author_id=24e8aebd-e1dd-4639-aa63-70f7d387c7cc

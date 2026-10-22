@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"log"
 	"net/http"
 	"strings"
 	"time"
@@ -68,15 +67,13 @@ func (cfg *apiConfig) handlerChirpsCreate(w http.ResponseWriter, r *http.Request
 		return
 	}
 	cleanedChirp := cleanChirp(params.Body, profanity)
-	// save to db
-	// respond with JSON
 	newChirp, err := cfg.db.CreateChirp(r.Context(), database.CreateChirpParams{
 		Body: cleanedChirp,
 		UserID: userID,
 	})
 	if err != nil {
-		// TODO: replace with respondWithError
-		log.Printf("Error creating chirp in db: %s", err)
+		respondWithError(w, http.StatusInternalServerError, "couldn't create chirp", err)
+		return
 	}
 
 	respondWithJSON(w, http.StatusCreated, Chirp{
@@ -91,8 +88,22 @@ func (cfg *apiConfig) handlerChirpsCreate(w http.ResponseWriter, r *http.Request
 func (cfg *apiConfig) handlerChirpsRetrieve(w http.ResponseWriter, r *http.Request) {
 	dbChirps, err := cfg.db.GetChirps(r.Context())
 	if err != nil {
-		// TODO: replace with respondWithError
-		log.Printf("Error retrieving chirps from db: %s", err)
+		respondWithError(w, http.StatusInternalServerError, "couldn't get chirps", err)
+		return
+	}
+
+	query := r.URL.Query().Get("author_id")
+	if query != "" {
+		authorID, err := uuid.Parse(query)
+		if err != nil {
+			respondWithError(w, http.StatusInternalServerError, "couldn't parse query parameter", err)
+			return
+		}
+		dbChirps, err = cfg.db.GetChirpsByUserID(r.Context(), authorID)
+		if err != nil {
+			respondWithError(w, http.StatusInternalServerError, "couldn't get chirps", err)
+			return
+		}
 	}
 	
 	responseChirps := []Chirp{}
